@@ -26,28 +26,50 @@ def home():
     print(result)
     return jsonify(result)
 
-@app.route("/api/bookmark")
+@app.route('/api/bookmark')
 def get_bookmark():
     import json
     import common.mongodbConnecter as mongodbConnecter
-    path = request.args.get('path')
     db = mongodbConnecter.connect_database('test')
+    path = request.args.get('path')
     bookmark_list = mongodbConnecter.find_many(db.bookmarks, {'path':path})
     # print(bookmark_list)
     print(json.dumps(bookmark_list, default=str, ensure_ascii=False))
     return json.dumps(bookmark_list, default=str, ensure_ascii=False)
 
-@app.route("/api/bookmark/search")
+@app.route('/api/bookmark/search')
 def search_bookmark():
     import json
     import common.mongodbConnecter as mongodbConnecter
+    db = mongodbConnecter.connect_database('test')
     query = request.args.get('query')
     print(query)
-    db = mongodbConnecter.connect_database('test')
     bookmark_list = mongodbConnecter.find_many(db.bookmarks, {'title': {'$regex': query}})
     # print(bookmark_list)
     print(json.dumps(bookmark_list, default=str, ensure_ascii=False))
     return json.dumps(bookmark_list, default=str, ensure_ascii=False)
+
+@app.route('/api/bookmark/<_id>', methods=['GET', 'DELETE', 'POST'])
+def crud_bookmark(_id):
+    import json
+    if request.method == 'GET':
+        return('GET')
+    if request.method == 'DELETE':
+        from bson.objectid import ObjectId
+        import common.mongodbConnecter as mongodbConnecter
+        db = mongodbConnecter.connect_database('test')
+        db.bookmarks.delete_one({'_id': ObjectId(_id) })
+        return('{_id} is delted'.format(_id=_id))
+    if request.method == 'POST':
+        from bson.objectid import ObjectId
+        import common.mongodbConnecter as mongodbConnecter
+        db = mongodbConnecter.connect_database('test')
+        param = request.get_data()
+        param = json.loads(param.decode('utf8'))
+        print(param)
+        db.bookmarks.update_one({'_id': ObjectId(_id)}, {'$set':param})
+        return('{_id} is updated'.format(_id=_id))
+
 
 
 @app.route("/api/folder")
