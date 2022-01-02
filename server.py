@@ -66,8 +66,9 @@ def crud_bookmark(_id):
         db = mongodbConnecter.connect_database('test')
         param = request.get_data()
         param = json.loads(param.decode('utf8'))
-        print(param)
-        db.bookmarks.update_one({'_id': ObjectId(_id)}, {'$set':param})
+        print(param['param'])
+        print(type(param['param']))
+        db.bookmarks.update_one({'_id': ObjectId(_id)}, {'$set':param['param']})
         return('{_id} is updated'.format(_id=_id))
 
 
