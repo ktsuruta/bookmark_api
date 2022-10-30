@@ -2,17 +2,21 @@ from linkpreview import link_preview
 from bs4 import BeautifulSoup
 import requests
 import ast
+import os
+import pprint
+import time
+import urllib.error
+import urllib.request
 
-def get_meta_image(url):
-    r = requests.get(url)
-    
-    soup = BeautifulSoup(r.text, 'html.parser')
-    target_sources = ['twitter:image','og:image']
-    taregt_attributes = ['property', 'name']
-    for target_source in target_sources:
-        for target_attribute in taregt_attributes:
-            for meta_tag in soup.find_all('meta', attrs={target_attribute: target_source}):
-                return meta_tag.get('content')
+def download_file(url, dst_path):
+    try:
+        with urllib.request.urlopen(url) as web_file:
+            data = web_file.read()
+            with open(dst_path, mode='wb') as local_file:
+                local_file.write(data)
+    except urllib.error.URLError as e:
+        print(e)
+
 
 def connect_database(database_name):
     from pymongo import MongoClient
@@ -61,6 +65,8 @@ def insert_element_of_json(json_object, parent_folder, db):
             print(result["image"])
             print(result["absolute_image"])
             print("image")
+            images_dst = "./images/{file_name}".format(file_name=result["image"].split("/")[-1])
+            download_file(result["image"],images_dst)
             
             db.bookmarks.insert_one(result)
 
