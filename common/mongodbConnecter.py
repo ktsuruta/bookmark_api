@@ -65,7 +65,7 @@ def insert_element_of_json(json_object, parent_folder, db):
             print(result["image"])
             print(result["absolute_image"])
             print("image")
-            images_dst = "./images/{file_name}".format(file_name=result["image"].split("/")[-1])
+            images_dst = "./images/{file_name}".format(file_name=result["image"].split("/")[-1].split("?")[0])
             download_file(result["image"],images_dst)
             
             db.bookmarks.insert_one(result)
