@@ -61,11 +61,6 @@ def insert_element_of_json(json_object, parent_folder, db):
             print(result["image"])
             print(result["absolute_image"])
             print("image")
-            print(get_meta_image(url))
-            meta_image = get_meta_image(url)
-            if meta_image != '':
-                result["image"] = meta_image
-                result["absolute_image"] = meta_image
             
             db.bookmarks.insert_one(result)
 
