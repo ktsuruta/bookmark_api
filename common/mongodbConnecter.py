@@ -1,12 +1,25 @@
 from linkpreview import link_preview
+from bs4 import BeautifulSoup
+import requests
+import ast
 
+def get_meta_image(url):
+    r = requests.get(url)
+    
+    soup = BeautifulSoup(r.text, 'html.parser')
+    target_sources = ['twitter:image','og:image']
+    taregt_attributes = ['property', 'name']
+    for target_source in target_sources:
+        for target_attribute in taregt_attributes:
+            for meta_tag in soup.find_all('meta', attrs={target_attribute: target_source}):
+                return meta_tag.get('content')
 
 def connect_database(database_name):
     from pymongo import MongoClient
     import pymongo
 
     # Provide the mongodb atlas url to connect python to mongodb using pymongo
-    CONNECTION_STRING = "mongodb://bookmark_organizer_db_1:27017"
+    CONNECTION_STRING = "mongodb://db:27017"
     # Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
     client = MongoClient(CONNECTION_STRING)
 
@@ -25,18 +38,34 @@ def insert_element_of_json(json_object, parent_folder, db):
     else:
         try:
             url = (json_object['url'])
-            preview = link_preview(url)
+#            preview = link_preview(url)
+            print(url)
+            print("this is the URL that will be prevoewed")
+            response = requests.post('http://preview:5000', data={'url': url})
+            preview = ast.literal_eval(response.text)
+
+            print("preview")
             print(preview)
             result = {"path": parent_folder,
                         "url": json_object['url'],
                         "bookmark_name": json_object['title'],
-                        "title": preview.title, 
-                        "description": preview.description, 
-                        "image": preview.image, 
-                        "force_title": preview.force_title, 
-                        "absolute_image": preview.absolute_image,
+                        "title": preview['title'], 
+                        "description": preview['description'], 
+                        "image": preview['og_img'], 
+                        "force_title": "", 
+                        "absolute_image": preview['og_img'],
                         "link_preview": True
                         }
+            print("result")
+            print(result["bookmark_name"])
+            print(result["image"])
+            print(result["absolute_image"])
+            print("image")
+            print(get_meta_image(url))
+            meta_image = get_meta_image(url)
+            if meta_image != '':
+                result["image"] = meta_image
+                result["absolute_image"] = meta_image
             
             db.bookmarks.insert_one(result)
 
