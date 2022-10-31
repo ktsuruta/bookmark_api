@@ -50,12 +50,17 @@ def insert_element_of_json(json_object, parent_folder, db):
 
             print("preview")
             print(preview)
+            file_name = preview['og_img'].split("/")[-1].split("?")[0]
+            images_dst = "/images/{file_name}".format(file_name=file_name)
+            download_file(preview['og_img'],images_dst)
+            image_url = "http://localhost/{file_name}".format(file_name=file_name)
+
             result = {"path": parent_folder,
                         "url": json_object['url'],
                         "bookmark_name": json_object['title'],
                         "title": preview['title'], 
                         "description": preview['description'], 
-                        "image": preview['og_img'], 
+                        "image": image_url, 
                         "force_title": "", 
                         "absolute_image": preview['og_img'],
                         "link_preview": True
@@ -64,9 +69,6 @@ def insert_element_of_json(json_object, parent_folder, db):
             print(result["bookmark_name"])
             print(result["image"])
             print(result["absolute_image"])
-            print("image")
-            images_dst = "./images/{file_name}".format(file_name=result["image"].split("/")[-1].split("?")[0])
-            download_file(result["image"],images_dst)
             
             db.bookmarks.insert_one(result)
 
