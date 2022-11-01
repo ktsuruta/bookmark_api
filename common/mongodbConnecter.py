@@ -50,9 +50,9 @@ def insert_element_of_json(json_object, parent_folder, db):
 
             print("preview")
             print(preview)
-            file_name = preview['og_img'].split("/")[-1].split("?")[0]
+            file_name = preview['image'].split("/")[-1].split("?")[0]
             images_dst = "/images/{file_name}".format(file_name=file_name)
-            download_file(preview['og_img'],images_dst)
+            download_file(preview['image'],images_dst)
             image_url = "http://localhost/{file_name}".format(file_name=file_name)
 
             result = {"path": parent_folder,
@@ -62,7 +62,7 @@ def insert_element_of_json(json_object, parent_folder, db):
                         "description": preview['description'], 
                         "image": image_url, 
                         "force_title": "", 
-                        "absolute_image": preview['og_img'],
+                        "absolute_image": preview['image'],
                         "link_preview": True
                         }
             print("result")
