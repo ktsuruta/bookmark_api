@@ -51,8 +51,8 @@ def insert_element_of_json(json_object, parent_folder, db):
             print("preview")
             print(preview)
             file_name = preview['image'].split("/")[-1].split("?")[0]
-            images_dst = "/images/{file_name}".format(file_name=file_name)
-            download_file(preview['image'],images_dst)
+            # images_dst = "/images/{file_name}".format(file_name=file_name)
+            # download_file(preview['image'],images_dst)
             image_url = "http://localhost/{file_name}".format(file_name=file_name)
 
             result = {"path": parent_folder,
@@ -60,7 +60,7 @@ def insert_element_of_json(json_object, parent_folder, db):
                         "bookmark_name": json_object['title'],
                         "title": preview['title'], 
                         "description": preview['description'], 
-                        "image": image_url, 
+                        "image": preview['image'], 
                         "force_title": "", 
                         "absolute_image": preview['image'],
                         "link_preview": True
